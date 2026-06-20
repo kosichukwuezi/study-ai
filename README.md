@@ -3,7 +3,7 @@
 A free web app that turns lecture notes into study material ,summaries, quizzes, and flashcards, using AI. Built to  genuinely free, with no paywalls or usage limits.
 
 ## Why I built this
-I more specifically built this with my experience using online AI study apps in mind, while a common concept, a lot of study tools hide behing giant paywalls, or usage limits.I wanted a fast way to turn messy or lengthy lecture notes into something useful for exam prep. It also let me learn how to integrate an AI API into a full-stack web app.
+I more specifically built this with my experience using online AI study apps in mind, while a common concept, a lot of study tools hide behind giant paywalls, or usage limits. I wanted a fast and visual way to turn messy or lengthy lecture notes into something useful for exam prep.
 
 ## What it does
 - Paste in lecture notes or any text
