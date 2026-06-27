@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Your Notes</title>
+    <title>Your Summary — STUDY AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
-    <h1>Your Notes</h1>
-    <p>{{ notes }}</p>
-    <a href="/">← Back</a>
+    <div class="container">
+      <div class="result-content">{{ notes | safe }}</div>
+      <a href="/" class="back-link">← Summarize more notes</a>
+    </div>
   </body>
 </html>

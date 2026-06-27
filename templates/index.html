@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-
 <html>
-    <head>
-        <title> Study AI </title>
-    </head>
-    <body>
-        <h1> AI Study Tool</h1>
-        <p> Paste your notes below and get a summary.</p>
-        
-        <form action="/summarize" method = "POST">
-            <textarea name = "notes" rows ="10" placeholder ="Paste your lecture notes here..."></textarea>
+  <head>
+    <title>STUDY AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <div class=" "container>
+        <h1>Your Notes</h1>
+        <p class = "subtitle"> Paste your notes and get an instant summary.</p>
+        <form action="/summarize " method = "POST">
+            <textarea name = "notes" rows="12" placeholder="Paste your lecture notes here..."></textarea>
             <br>
-            <button type = "submit">Summarize</button> 
+            <button type="submit">/Summarize</button>
         </form>
-    </body>
+    <div>{{ notes | safe }}</div>
+  </body>
 </html>
