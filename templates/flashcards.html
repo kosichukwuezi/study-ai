@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Quick Quiz — STUDY AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+      .game-card {
+        background: #4f46e5;
+        color: white;
+        border-radius: 16px;
+        padding: 50px 24px;
+        min-height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 1.3rem;
+        cursor: pointer;
+        margin-bottom: 20px;
+      }
+      .timer { font-size: 1.5rem; font-weight: bold; color: #4f46e5; text-align: center; }
+      .score { text-align: center; color: #64748b; margin-bottom: 16px; }
+      .btn-row { display: flex; gap: 12px; }
+      .btn-row button { flex: 1; }
+      .missed-btn { background: #ef4444; }
+      .missed-btn:hover { background: #dc2626; }
+      .got-btn { background: #22c55e; }
+      .got-btn:hover { background: #16a34a; }
+      #results { text-align: center; }
+      .review-item {
+        background: #fef2f2; border-left: 4px solid #ef4444;
+        padding: 12px; border-radius: 8px; margin-bottom: 8px; text-align: left;
+      }
+      .hidden { display: none; }
+    </style>
+  </head>
+  <body>
+    <div class = "container">
+        <!-- Flashcards game screen-->
+         <div id ="game">
+            <div class="timer" id="timer">1:30</div>
+            <div class="score" id="score"> Card 1 - Score: 0</div>
+            <div class="game-card" id="card" onclick="flipCard()">Click to start</div>
+            <div class="btn-row">
+                <button class="missed-btn" onclick="answer(false)">Wrong ❌</button>
+                <button class="got-btn" onclick="answer(true)">Right ✅</button>
+            </div>
+         </div>
+         <!-- The results screen (hidden until the end) -->
+        <div id ="results" class = "hidden">      
+        <h1>Time's up!</h1>
+        <p class="score" id ="final-score"></p>
+        <h2 style="color:#ef4444; margin-top:20px;">Review these:</h2>
+        <div id="review-list"></div>
+        <a href="/" class="back-link">← New Game</a>
+        </div>
+    </div>
+
+    <script>
+        // STATE- the variables that track whats happening in the game
+        var cards = {{ cards | tojson }};   // all the cards, passed from Python to JS
+        var current = 0;
+        var score = 0;
+        var missed = [];
+        var showingBack = false;
+        var timeLeft = 90;
+
+        var cardEl = document.getElementById("card");
+        var scoreEl = document.getElementById("score");
+        var timerEl = document.getElementById("timer");
+
+        //show the current cards front
+        function showCard(){
+            if(current >= cards.length){
+                endGame();
+                return;
+            }
+            showingBack = false;
+            cardEl.textContent = cards[current].front;
+            scoreEl.textContent = "Card" + (current+1) + " -Score:" +score;
+        }
+        function flipCard(){
+            if(showingBack){
+                cardEl.textContent = cards[current].front;   
+            }else{
+                cardEl.textContent = cards[current].back;
+            }
+            showingBack = !showingBack; //flip the boolean value
+        }
+        function answer(gotIt){
+            if(gotIt){
+                score++;
+            }else{
+                missed.push(cards[current]); //save the missed card for review)
+            }
+            current++;
+            showCard();
+        }
+
+        //The countdown - runs once every second
+        var countdown = setInterval(function(){
+            timeLeft--;
+            var minutes = Math.floor(timeLeft / 60);
+            var seconds = timeLeft % 60;
+            timerEl.textContent = minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
+            if (timeLeft <= 0){
+                endGame();
+            }
+        }, 1000)
+
+        //End the game - stop timer, show results
+        function endGame(){
+            clearInterval(countdown);   //stop the timer
+            document.getElementById("game").classList.add("hidden"); //hide the game screen
+            document.getElementById("results").classList.remove("hidden"); //show the results screen
+            document.getElementById("final-score").textContent = "You got " + score + " out of " +(current) +"attempted!";
+
+            //build the review list of missed cards
+            var list = document.getElementById("review-list");
+            for(var i = 0; i < missed.length; i++){
+                var div = document.createElement("div");
+                div.className = "review-item";
+                div.innerHTML = "<strong> " + missed[i].front + "</strong><br>" + missed[i].back;
+                list.appendChild(div);
+            }
+        }
+
+        showCard(); //show the first card when the page loads
+    </script>
+  </body>
+</html>

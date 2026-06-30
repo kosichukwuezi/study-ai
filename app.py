@@ -29,7 +29,16 @@ Format: [{{"question": "...", "answer": "..."}}]
 
 Notes:
 {notes}"""
-        
+    elif mode == "flashcards":
+            prompt = f"""Create 10 flashcards based on these notes.
+    The "front" must be a QUESTION or TERM only (never the answer).
+    The "back" must be the answer or definition.
+    Return ONLY a JSON array, no other text or markdown.
+    Format: [{{"front": "What is a stack?", "back": "A LIFO data structure where you add and remove from the top"}}]
+
+    Notes:
+    {notes}"""
+            
     else:
         prompt = f"Summarize these lecture notes clearly and concisely:\n\n{notes}"
 
@@ -46,11 +55,18 @@ Notes:
 
     #Handle the response differently based on the mode
     if mode == "quiz":
+        start = raw.find("[") # find the start of the JSON array in the response
+        end = raw.rfind("]") + 1 # find the end of the JSON array in the response
+        json_part = raw[start:end] # extract the JSON array from the response
+        questions = json.loads(json_part) # convert the JSON array to a Python list of dictionaries
+        return render_template("quiz.html", questions=questions) # render the quiz.html template with the questions
+    
+    elif mode == "flashcards":
         start = raw.find("[")
         end = raw.rfind("]") + 1
-        json_part = raw[start:end]
-        questions = json.loads(json_part)
-        return render_template("quiz.html", questions=questions)
+        cards = json.loads(raw[start:end])
+        return render_template("flashcards.html", cards=cards)
+     
     else:
         result =markdown.markdown(raw, extensions=["tables"]) # convert the summary to HTML format using the markdown library
         return render_template("result.html", notes=result)
