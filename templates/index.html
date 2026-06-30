@@ -11,7 +11,12 @@
         <form action="/summarize " method = "POST">
             <textarea name = "notes" rows="12" placeholder="Paste your lecture notes here..."></textarea>
             <br>
-            <button type="submit">/Summarize</button>
+            <select name="mode">
+                <option value ="summary">Summarize</option>
+                <option value ="quiz">Quiz Me</option>
+            </select>
+            <br>
+            <button type="submit">Generate </button>
         </form>
     <div>{{ notes | safe }}</div>
   </body>

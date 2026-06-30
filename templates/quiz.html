@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Quiz — STUDY AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+      .question-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .question-text {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 12px;
+      }
+      .answer {
+        display: none;
+        background: #eef2ff;
+        border-left: 4px solid #4f46e5;
+        padding: 12px 16px;
+        border-radius: 8px;
+        color: #1e293b;
+        margin-top: 10px;
+      }
+      .reveal-btn {
+        width: auto;
+        padding: 8px 20px;
+        font-size: 0.9rem;
+        margin-top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+        <h1>Quiz</h1>
+        <p class = "subtitle"> Test yourself!</p>
+
+        {% for i, q in enumerate(questions) %}
+        <div class="question-card">
+            <div class="question-text">{{ i + 1}}. {{ q.question }} </div>
+            <button class="reveal-btn" onclick="reveal('answer-{{ i }}')">Reveal Answer</button>
+            <div class="answer"  id="answer-{{ i }}"> {{ q.answer }}</div>
+        </div>
+        {% endfor %}
+        <a href="/" class="back-link">← Back to Home</a>       
+    </div>
+
+    <script>
+        function reveal(id) {
+            var answer = document.getElementById(id);
+            if (answer.style.display === 'none' || answer.style.display === '') {
+                answer.style.display = 'block';
+            } else {
+                answer.style.display = 'none';
+            }
+        }
+    </script>
+  </body>
+</html>
+
