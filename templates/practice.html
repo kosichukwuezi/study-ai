@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Practice Quiz — STUDY AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+      .game-card {
+        background: #4f46e5; color: white; border-radius: 16px;
+        padding: 50px 24px; min-height: 180px; display: flex;
+        align-items: center; justify-content: center; text-align: center;
+        font-size: 1.3rem; cursor: pointer; margin-bottom: 20px;
+      }
+      .progress { text-align: center; color: #64748b; margin-bottom: 16px; font-size: 1.1rem; }
+      .btn-row { display: flex; gap: 12px; }
+      .btn-row button { flex: 1; }
+      .missed-btn { background: #ef4444; }
+      .missed-btn:hover { background: #dc2626; }
+      .got-btn { background: #22c55e; }
+      .got-btn:hover { background: #16a34a; }
+      #results { text-align: center; }
+      .review-item {
+        background: #fef2f2; border-left: 4px solid #ef4444;
+        padding: 12px; border-radius: 8px; margin-bottom: 8px; text-align: left;
+      }
+      .hidden { display: none; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div id="game">
+        <div class="progress" id="progress">Card 1 of 20 — Score: 0</div>
+        <div class="game-card" id="card" onclick="flipCard()">Click to flip</div>
+        <div class="btn-row">
+          <button class="missed-btn" onclick="answer(false)">Missed it ❌</button>
+          <button class="got-btn" onclick="answer(true)">Got it ✅</button>
+        </div>
+      </div>
+
+      <div id="results" class="hidden">
+        <h1>Session complete!</h1>
+        <p class="progress" id="final-score"></p>
+        <h2 style="color:#ef4444; margin-top:20px;">Review these:</h2>
+        <div id="review-list"></div>
+        <a href="/" class="back-link">← New session</a>
+      </div>
+    </div>
+
+    <script>
+      var cards = {{ cards | tojson }};
+      var current = 0;
+      var score = 0;
+      var missed = [];
+      var showingBack = false;
+
+      var cardEl = document.getElementById("card");
+      var progressEl = document.getElementById("progress");
+
+      function showCard(){
+        if(current >= cards.length){ endGame(); return; }
+        showingBack = false;
+        cardEl.textContent = cards[current].front;
+        progressEl.textContent = "Card " + (current+1) + " of " + cards.length + " — Score: " + score;
+      }
+
+      function flipCard(){
+        if(showingBack){
+          cardEl.textContent = cards[current].front;
+        } else {
+          cardEl.textContent = cards[current].back;
+        }
+        showingBack = !showingBack;
+      }
+
+      function answer(gotIt){
+        if(gotIt){ score++; } else { missed.push(cards[current]); }
+        current++;
+        showCard();
+      }
+
+      function endGame(){
+        document.getElementById("game").classList.add("hidden");
+        document.getElementById("results").classList.remove("hidden");
+        document.getElementById("final-score").textContent =
+          "You got " + score + " out of " + cards.length + "!";
+
+        var list = document.getElementById("review-list");
+        for(var i = 0; i < missed.length; i++){
+          var div = document.createElement("div");
+          div.className = "review-item";
+          div.innerHTML = "<strong>" + missed[i].front + "</strong><br>" + missed[i].back;
+          list.appendChild(div);
+        }
+      }
+
+      showCard();
+    </script>
+  </body>
+</html>

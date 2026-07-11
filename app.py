@@ -26,9 +26,16 @@ def summarize():
     if mode == "quiz":
         prompt = f"""Create 5 quiz questions based on these notes. Return ONLY a JSON array, no other text or markdown.
 Format: [{{"question": "...", "answer": "..."}}]
-
 Notes:
 {notes}"""
+    elif mode == "practice":
+        prompt = f"""Create 20 flashcards based on these notes.The "front" must be a QUESTION or TERM only (never the answer).
+    The "back" must be the answer or definition.
+    Return ONLY a JSON array, no other text or markdown.
+    Format: [{{"front": "What is a stack?", "back": "A LIFO data structure where you add and remove from the top"}}]
+    Notes:
+    {notes}"""
+        
     elif mode == "flashcards":
             prompt = f"""Create 10 flashcards based on these notes.
     The "front" must be a QUESTION or TERM only (never the answer).
@@ -66,6 +73,12 @@ Notes:
         end = raw.rfind("]") + 1
         cards = json.loads(raw[start:end])
         return render_template("flashcards.html", cards=cards)
+    
+    elif mode == "practice":
+        start = raw.find("[")
+        end = raw.rfind("]") + 1
+        cards = json.loads(raw[start:end])
+        return render_template("practice.html", cards=cards)    
      
     else:
         result =markdown.markdown(raw, extensions=["tables"]) # convert the summary to HTML format using the markdown library
