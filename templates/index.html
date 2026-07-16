@@ -5,10 +5,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
-    <div class=" "container>
+    <div class= "container">
         <h1>Your Notes</h1>
         <p class = "subtitle"> Paste your notes and get an instant summary.</p>
-        <form action="/summarize " method = "POST">
+        <form action="/summarize" method = "POST" enctype="multipart/form-data">
+          <p style="margin: 12px 0 8px; color:#64748b; ">Or upload a PDF</p>"
+          <input type="file" name="pdf" accept=".pdf">
             <textarea name = "notes" rows="12" placeholder="Paste your lecture notes here..."></textarea>
             <br>
             <select name="mode">
@@ -20,6 +22,6 @@
             <br>
             <button type="submit">Generate </button>
         </form>
-    <div>{{ notes | safe }}</div>
+      </div>{{ notes | safe }}</div>
   </body>
 </html>

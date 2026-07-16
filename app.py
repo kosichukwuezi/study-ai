@@ -1,4 +1,5 @@
-from curses import raw
+
+from io import Reader
 
 import markdown
 from flask import Flask, render_template, request
@@ -6,6 +7,7 @@ import anthropic #import the anthropic library
 import os # import the os library to access environment variables
 from dotenv import load_dotenv # import the env where the API key is stored
 import json 
+from pypdf import PdfReader
 
 load_dotenv()
 
@@ -21,6 +23,15 @@ def home():
 def summarize():
     notes = request.form["notes"] #get the notes from the submission
     mode = request.form["mode"] #get which mode the user selected
+
+    uploaded = request.files.get("pdf") #get the uploaded file if any
+    if uploaded and uploaded.filename != "": #check if a file was uploaded
+        reader = PdfReader(uploaded)
+        pdf_text =""
+        for page in reader.pages:
+            pdf_text +=page.extract_text()
+        notes = pdf_text #replace the notes with the text extracted from the PDF
+
 
     # choose the instruction based on the mode
     if mode == "quiz":
@@ -47,7 +58,18 @@ Notes:
     {notes}"""
             
     else:
-        prompt = f"Summarize these lecture notes clearly and concisely:\n\n{notes}"
+        prompt = f"""You are a study assistant. Create study-focused notes from the material below.
+
+    Structure your response as:
+    1. **Key Concepts** — the main ideas, each explained in 1-2 clear sentences
+    2. **Important Terms** — bold each key term with its definition
+    3. **What to Focus On** — flag the 3-4 most exam-relevant points
+    4. **Quick Review** — 3-5 bullet takeaways for fast revision
+
+    Keep explanations clear and tied to the source material. Preserve any formulas, definitions, or specific facts exactly. If the material references a diagram or figure, mention it by name so the student knows to review it.
+
+    Material:
+    {notes}"""
 
 
     message = client.messages.create(
