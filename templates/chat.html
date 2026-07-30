@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tutor Chat — STUDY AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+      .chat-box {
+        min-height: 300px; max-height: 400px; overflow-y: auto;
+        border: 1px solid #e2e8f0; border-radius: 12px;
+        padding: 16px; margin-bottom: 16px; background: #f8fafc;
+      }
+      .msg { margin-bottom: 12px; padding: 10px 14px; border-radius: 12px; max-width: 80%; }
+      .user-msg { background: #4f46e5; color: white; margin-left: auto; }
+      .ai-msg { background: white; border: 1px solid #e2e8f0; color: #1e293b; }
+      .chat-input-row { display: flex; gap: 8px; }
+      .chat-input-row input { flex: 1; }
+    </style>
+  </head>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <body>
+    <div class="container">
+      <h1>Tutor Chat</h1>
+      <p class="subtitle">Ask your tutor anything about your material.</p>
+
+      <div class="chat-box" id="chatBox"></div>
+
+      <div class="chat-input-row">
+        <input type="text" id="userInput" placeholder="Ask a question..." onkeydown="if(event.key==='Enter') sendMessage()">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+
+      <a href="/" class="back-link" style="display:block; margin-top:16px;">← Back to Home</a>
+    </div>
+
+    <script>
+        //the conversation history- starts empty and grows with message
+        var conversation =[];
+
+        var chatBox = document.getElementById("chatBox");
+        var userInput = document.getElementById("userInput");
+
+        function addMessage(text,sender) {
+            var div = document.createElement("div"); //Create a CSS class
+            div.className = "msg " + (sender === "user" ? "user-msg" : "ai-msg"); //if its from the user, style it as user messgae, otherwise style it as an AI message
+            if (sender == "ai"){
+                div.innerHTML = marked.parse(text);
+            }else{
+                div.textContent = text;
+            }
+            chatBox.appendChild(div);// adds the chat box on the page
+            chatBox.scrollTop = chatBox.scrollHeight; //scrolls downs so the newest message is visible
+        }
+        async function sendMessage() {
+            var text = userInput.value.trim(); //grab what the user typed, remove the extra spaces
+            if (text === "") return; //if empty return
+
+            addMessage(text, "user"); //show the message on the screen
+            conversation.push({role: "user", content: text }); //add the message to the memory list
+            userInput.value = ""; // clear the imput box
+
+            var response = await fetch("/chat",{ //send the whole conversation to the backend without reloading the page
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({messages: conversation}) //package the history as JSON to send
+            });
+            var data = await response.json(); //unpack the reply that comes back
+
+            addMessage(data.reply, "ai") //show the AI's answer
+            conversation.push({role:"assistant", content:data.reply}); //add the Ai's reply to memory too
+        }
+    </script>

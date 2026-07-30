@@ -1,6 +1,4 @@
 
-from io import Reader
-
 import markdown
 from flask import Flask, render_template, request
 import anthropic #import the anthropic library
@@ -56,6 +54,20 @@ Notes:
 
     Notes:
     {notes}"""
+    elif mode == "exam":
+        prompt = f"""Create Carleton university exam-style questions based on the material below.
+
+    Generate a mix of:
+    - 2-3 short answer questions testing concept understanding
+    - 2-3 problem-solving questions where the student must apply the concept and show their work
+    - 1-2 questions asking the student to trace, derive, or analyze something step by step
+
+    Format each question clearly with marks indicated (e.g. [5 marks]).
+    After all questions, include an "Answer Key" section with full worked solutions.
+    Match the rigor of a third-year university engineering exam.
+
+    Material:
+    {notes}"""
             
     else:
         prompt = f"""You are a study assistant. Create study-focused notes from the material below.
@@ -74,7 +86,7 @@ Notes:
 
     message = client.messages.create(
         model="claude-haiku-4-5-20251001", #what claude model to use
-        max_tokens=1000, #message length limit
+        max_tokens=2000, #message length limit
         messages=[
             {"role": "user", "content": prompt}
         ] #the message sent to the model for summarization 
@@ -100,10 +112,32 @@ Notes:
         start = raw.find("[")
         end = raw.rfind("]") + 1
         cards = json.loads(raw[start:end])
-        return render_template("practice.html", cards=cards)    
+        return render_template("practice.html", cards=cards)  
+    
      
     else:
         result =markdown.markdown(raw, extensions=["tables"]) # convert the summary to HTML format using the markdown library
         return render_template("result.html", notes=result)
+@app.route("/chat", methods=["POST"]) #chat action
+def chat():
+    #the browser sends us the whole conversation as a JSON array of messages, so we just pass it along to Claude
+    data = request.get_json() #read the convseration history
+    conversation = data["messages"]
+
+    #send the entire conversation history to Claude
+    message = client.messages.create(
+    model="claude-haiku-4-5-20251001", 
+    max_tokens=2000, 
+    system="You are a friendly, patient tutor helping a student understand their study material. Explain clearly, use examples, and answer follow-up questions helpfully.",
+    messages=conversation
+    )
+    reply = message.content[0].text
+
+    #send the reply back to the browser as JSON
+    return {"reply": reply}
+@app.route("/tutor")
+def tutor_page():
+    return render_template("chat.htmlwtier")
+
 if __name__ == "__main__":
     app.run(debug=True, port=5002)
