@@ -137,7 +137,7 @@ def chat():
     return {"reply": reply}
 @app.route("/tutor")
 def tutor_page():
-    return render_template("chat.htmlwtier")
+    return render_template("chat.html")
 
 if __name__ == "__main__":
     app.run(debug=True, port=5002)

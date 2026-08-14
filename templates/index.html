@@ -5,24 +5,41 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
-    <div class= "container">
+    <div class="layout">
+
+      <!-- LEFT SIDEBAR (branding + nav) -->
+      <div class="sidebar">
+        <div class="logo">📚 STUDY AI</div>
+        <nav>
+          <a href="/" class="nav-item active">Home</a>
+          <a href="/tutor" class="nav-item">Tutor Chat</a>
+          <a href="/about" class="nav-item">About</a>
+        </nav>
+        <p class="sidebar-tag">Turn your notes into study material.</p>
+      </div>
+
+      <!-- MAIN CONTENT -->
+      <div class="main">
         <h1>Your Notes</h1>
-        <p class = "subtitle"> Paste your notes and get an instant summary.</p>
-        <form action="/summarize" method = "POST" enctype="multipart/form-data">
-          <p style="margin: 12px 0 8px; color:#64748b; ">Or upload a PDF</p>"
+        <p class="subtitle">Paste your notes or upload a PDF, pick a mode, and go.</p>
+
+        <form action="/summarize" method="POST" enctype="multipart/form-data">
+          <p style="margin: 12px 0 8px; color:#839958;">Or upload a PDF:</p>
           <input type="file" name="pdf" accept=".pdf">
-            <textarea name = "notes" rows="12" placeholder="Paste your lecture notes here..."></textarea>
-            <br>
-            <select name="mode">
-                <option value ="summary">Summarize</option>
-                <option value ="quiz">Quiz Me</option>
-                <option value ="flashcards">Flashcards</option>
-                <option value ="practice">Practice Quiz (untimed)</option>
-                <option value="exam">Exam-Style Questions</option>
-            </select>
-            <br>
-            <button type="submit">Generate </button>
+          <textarea name="notes" rows="12" placeholder="Paste your lecture notes here..."></textarea>
+          <br>
+          <select name="mode">
+            <option value="summary">Summarize</option>
+            <option value="quiz">Quiz Me</option>
+            <option value="flashcards">Flashcard Game</option>
+            <option value="practice">Practice Quiz (untimed)</option>
+            <option value="exam">Exam-Style Questions</option>
+          </select>
+          <br>
+          <button type="submit">Generate</button>
         </form>
-      </div>{{ notes | safe }}</div>
+      </div>
+
+    </div>
   </body>
 </html>
