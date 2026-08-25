@@ -25,13 +25,13 @@ I more specifically built this with my experience using online AI study apps in 
 
 ### V1 (core — building now)
 - [x] Flask app with a notes input form
-- [ ] Echo route — proving the request cycle
-- [ ] Connect AI API for real summaries
-- [ ] Paste-in text → summary mode
-- [ ] Quiz-generation mode
-- [ ] Flashcard mode
-- [ ] Styling with CSS
-- [ ] Deploy live with a public link
+- [x] Echo route — proving the request cycle
+- [x] Connect AI API for real summaries
+- [x] Paste-in text → summary mode
+- [x] Quiz-generation mode
+- [x] Flashcard mode
+- [x] Styling with CSS
+- [x] Deploy live with a public link
 
 ### Future roadmap
 - [ ] "Teach the lecture" mode
